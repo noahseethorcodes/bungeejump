@@ -7,14 +7,13 @@ import ActionsBar from "@/components/content/actionsBar";
 import { Participant, Results } from "@/types/types";
 import ParticipantsCard from "@/components/content/participantsCard";
 import ResultsCard from "@/components/content/resultsCard";
-
-const MIN_GPA = 0.0;
-const MAX_GPA = 5.0;
+import { MIN_GPA, MIN_PARTICIPANTS } from "@/lib/constants";
 
 export default function HomePage() {
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [name, setName] = useState("");
   const [gpaInput, setGpaInput] = useState("");
+  const [maxGpaInput, setMaxGpaInput] = useState("5.0");
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<Results | null>(null);
   const [hasRevealed, setHasRevealed] = useState(false);
@@ -23,6 +22,7 @@ export default function HomePage() {
   const handleAddParticipant = () => {
     setError(null);
 
+    // Name Validation
     const trimmedName = name.trim();
     if (!trimmedName) {
       setError("Please enter a name.");
@@ -34,14 +34,22 @@ export default function HomePage() {
       return;
     }
 
+    // Max GPA Validation
+    const parsedMaxGpa = Number(maxGpaInput);
+    if (Number.isNaN(parsedMaxGpa)) {
+      setError("Please enter a valid Max GPA (e.g. 4.0).");
+      return;
+    }
+
+    // GPA Validation
     const parsedGpa = Number(gpaInput);
     if (Number.isNaN(parsedGpa)) {
       setError("Please enter a valid GPA (e.g. 4.25).");
       return;
     }
 
-    if (parsedGpa < MIN_GPA || parsedGpa > MAX_GPA) {
-      setError(`GPA should be between ${MIN_GPA} and ${MAX_GPA}.`);
+    if (parsedGpa < MIN_GPA || parsedGpa > parsedMaxGpa) {
+      setError(`GPA must be between ${MIN_GPA} and ${parsedMaxGpa}.`);
       return;
     }
 
@@ -49,6 +57,7 @@ export default function HomePage() {
       id: nextId,
       name: trimmedName,
       gpa: parsedGpa,
+      maxGpa: parsedMaxGpa
     };
 
     setParticipants((prev) => [...prev, newParticipant]);
@@ -63,6 +72,7 @@ export default function HomePage() {
     setParticipants([]);
     setName("");
     setGpaInput("");
+    setMaxGpaInput("5.0");
     setError(null);
     setResults(null);
     setHasRevealed(false);
@@ -72,31 +82,35 @@ export default function HomePage() {
   const computedResults = useMemo<Results | null>(() => {
     if (participants.length < 1) return null;
 
-    const gpas = participants.map((p) => p.gpa);
-    const highestGpa = Math.max(...gpas);
+    const normalized = participants.map(p => ({
+      name: p.name,
+      ratio: p.gpa / p.maxGpa,
+    }));
 
-    const distinctSorted = Array.from(new Set(gpas)).sort((a, b) => a - b);
+    // Highest ratio
+    const highestRatio = Math.max(...normalized.map(n => n.ratio));
+    const highestNames = normalized
+      .filter(n => n.ratio === highestRatio)
+      .map(n => n.name);
 
-    let secondLowestGpa: number | null = null;
-    if (distinctSorted.length >= 2) {
-      secondLowestGpa = distinctSorted[1];
+    // Distinct sorted values
+    const distinctRatios = Array.from(new Set(normalized.map(n => n.ratio)))
+      .sort((a, b) => a - b);
+
+    let secondLowestRatio: number | null = null;
+    if (distinctRatios.length >= 2) {
+      secondLowestRatio = distinctRatios[1];
     }
 
-    const highestNames = participants
-      .filter((p) => p.gpa === highestGpa)
-      .map((p) => p.name);
-
     const secondLowestNames =
-      secondLowestGpa === null
+      secondLowestRatio === null
         ? []
-        : participants
-            .filter((p) => p.gpa === secondLowestGpa)
-            .map((p) => p.name);
+        : normalized
+            .filter(n => n.ratio === secondLowestRatio)
+            .map(n => n.name);
 
     return {
-      highestGpa,
       highestNames,
-      secondLowestGpa,
       secondLowestNames,
     };
   }, [participants]);
@@ -104,8 +118,8 @@ export default function HomePage() {
   const handleReveal = () => {
     setError(null);
 
-    if (participants.length < 3) {
-      setError("You need at least 3 participants to reveal results.");
+    if (participants.length < MIN_PARTICIPANTS) {
+      setError(`You need at least ${MIN_PARTICIPANTS} participants to reveal results.`);
       return;
     }
 
@@ -143,11 +157,12 @@ export default function HomePage() {
           <AddParticipantCard 
             name={name}
             gpaInput={gpaInput}
+            maxGpaInput={maxGpaInput}
             onNameChange={setName}
             onGpaChange={setGpaInput}
+            onMaxGpaChange={setMaxGpaInput}
             onAdd={handleAddParticipant}
             minGpa={MIN_GPA}
-            maxGpa={MAX_GPA}
           />
 
           {/* Participants card */}
@@ -157,7 +172,7 @@ export default function HomePage() {
           <ActionsBar 
             onReveal={handleReveal}
             onReset={handleReset}
-            canReveal={participants.length >= 3 && !hasRevealed}
+            canReveal={participants.length >= MIN_PARTICIPANTS && !hasRevealed}
             canReset={participants.length > 0 || hasRevealed}
           />
 

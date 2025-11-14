@@ -29,6 +29,7 @@ export default function ParticipantsCard({ participants } : ParticipantsCardProp
                         key={p.id}
                         className="flex items-center justify-between rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm"
                       >
+                        {/* Left: index + name */}
                         <div className="flex items-center gap-2">
                           <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-slate-200 text-[11px] text-slate-700">
                             {index + 1}
@@ -37,9 +38,16 @@ export default function ParticipantsCard({ participants } : ParticipantsCardProp
                             {p.name}
                           </span>
                         </div>
-                        <span className="text-xs font-medium text-emerald-600">
-                          Submitted
-                        </span>
+
+                        {/* Right: status + max GPA scale */}
+                        <div className="flex flex-col items-end text-right">
+                          <span className="text-xs font-medium text-emerald-600">
+                            Submitted
+                          </span>
+                          <span className="text-[11px] text-slate-500">
+                            Max GPA: {p.maxGpa.toFixed(1)}
+                          </span>
+                        </div>
                       </li>
                     ))}
                   </ul>
