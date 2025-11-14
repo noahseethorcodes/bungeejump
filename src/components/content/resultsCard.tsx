@@ -54,7 +54,7 @@ export default function ResultsCard({ results, hasRevealed }: ResultsCardProps) 
             Second-Lowest Scorer
           </h3>
 
-          {results.secondLowestGpa === null ? (
+          {results.secondLowestNames.length === 0 ? (
             <p className="text-sm text-slate-600">
               All GPAs are identical — cannot determine a distinct second-lowest scorer.
             </p>
