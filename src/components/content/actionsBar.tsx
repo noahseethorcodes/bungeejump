@@ -13,7 +13,7 @@ export default function ActionsBar(
     return (
         <div className="flex flex-col gap-3 sm:flex-row">
             <Button
-              className="flex-1 bg-emerald-600 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-60"
+              className="flex-1 bg-emerald-600 text-sm font-semibold text-white hover:bg-emerald-500  hover:cursor-pointer disabled:opacity-60"
               onClick={onReveal}
               disabled={!canReveal}
             >
@@ -21,7 +21,7 @@ export default function ActionsBar(
             </Button>
             <Button
               variant="outline"
-              className="flex-1 border-slate-300 text-sm text-slate-700 hover:bg-slate-100 disabled:opacity-60"
+              className="flex-1 border-slate-300 text-sm text-slate-700 hover:bg-slate-100 hover:cursor-pointer disabled:opacity-60"
               onClick={onReset}
               disabled={!canReset}
             >

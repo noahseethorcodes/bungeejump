@@ -68,7 +68,7 @@ export default function AddParticipantCard(
               <div className="flex justify-end">
                 <Button
                   onClick={onAdd}
-                  className="bg-emerald-600 text-white hover:bg-emerald-500"
+                  className="bg-emerald-600 text-white hover:bg-emerald-500 hover:cursor-pointer"
                 >
                   Add to list
                 </Button>
