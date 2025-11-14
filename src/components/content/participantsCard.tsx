@@ -21,7 +21,7 @@ export default function ParticipantsCard({ participants } : ParticipantsCardProp
               ) : (
                 <>
                   <p className="text-xs text-slate-500">
-                    Showing who has submitted — GPAs stay hidden until reveal.
+                    Showing who has submitted — GPAs stay hidden.
                   </p>
                   <ul className="space-y-1.5">
                     {participants.map((p, index) => (

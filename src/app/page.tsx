@@ -29,6 +29,11 @@ export default function HomePage() {
       return;
     }
 
+    if (!gpaInput) {
+      setError("Please enter a GPA.");
+      return;
+    }
+
     const parsedGpa = Number(gpaInput);
     if (Number.isNaN(parsedGpa)) {
       setError("Please enter a valid GPA (e.g. 4.25).");

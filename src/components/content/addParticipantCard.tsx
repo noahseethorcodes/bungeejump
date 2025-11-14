@@ -59,6 +59,11 @@ export default function AddParticipantCard(
                     placeholder="e.g. 4.50"
                     value={gpaInput}
                     onChange={(e) => onGpaChange(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (["e", "E", "+", "-"].includes(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
                     className="text-sm"
                   />
                 </div>
